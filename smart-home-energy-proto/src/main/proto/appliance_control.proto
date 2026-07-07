@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+option java_package = "com.smarthome.generated";
+option java_outer_classname = "ApplianceControlProto";
+option java_multiple_files = true;
+
+package appliancecontrol;
+
+// ──────────────────────────────────────────────
+//  Service Definition
+// ──────────────────────────────────────────────
+service ApplianceControlService {
+
+  // Bidirectional Streaming RPC: client sends appliance commands,
+  // server streams back live status updates simultaneously
+  rpc ControlAppliance (stream ApplianceCommand) returns (stream ApplianceStatus);
+
+  // Unary RPC: get the current status of a specific appliance
+  rpc GetApplianceStatus (ApplianceStatusRequest) returns (ApplianceStatusResponse);
+}
+
+// ──────────────────────────────────────────────
+//  ControlAppliance messages
+// ──────────────────────────────────────────────
+
+// A command sent from the client to control an appliance
+message ApplianceCommand {
+  string appliance_id   = 1; // Unique device identifier e.g. "AC_LIVING_ROOM_01"
+  string appliance_name = 2; // Human-readable name e.g. "Living Room Air Conditioner"
+  string action         = 3; // Command to execute: ON, OFF, or ECO
+  string room_location  = 4; // Room where the appliance is located e.g. "Living Room"
+}
+
+// A status update streamed back from the server for a controlled appliance
+message ApplianceStatus {
+  string appliance_id       = 1; // Unique device identifier matching the command
+  string appliance_name     = 2; // Human-readable name of the appliance
+  string status             = 3; // Current operational state: ON, OFF, or ECO
+  double power_consumption  = 4; // Current power draw in watts
+  string message            = 5; // Confirmation text or error detail
+  string timestamp          = 6; // ISO 8601 datetime of this status update
+}
+
+// ──────────────────────────────────────────────
+//  GetApplianceStatus messages
+// ──────────────────────────────────────────────
+
+// Request to retrieve the current status of a specific appliance
+message ApplianceStatusRequest {
+  string appliance_id = 1; // Unique identifier of the device to query
+}
+
+// Response containing the current state of the requested appliance
+message ApplianceStatusResponse {
+  string appliance_id       = 1; // Unique device identifier
+  string appliance_name     = 2; // Human-readable name of the appliance
+  string status             = 3; // Current operational state: ON, OFF, or ECO
+  double power_consumption  = 4; // Current power draw in watts
+  string last_updated       = 5; // ISO 8601 datetime of the last status change
+  string message            = 6; // Status message or error description
+}

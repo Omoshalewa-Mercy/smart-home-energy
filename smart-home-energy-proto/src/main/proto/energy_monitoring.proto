@@ -1,0 +1,71 @@
+syntax = "proto3";
+
+option java_package = "com.smarthome.generated";
+option java_outer_classname = "EnergyMonitoringProto";
+option java_multiple_files = true;
+
+package energymonitoring;
+
+// ──────────────────────────────────────────────
+//  Service Definition
+// ──────────────────────────────────────────────
+service EnergyMonitoringService {
+
+  // Unary RPC: record a single energy usage reading
+  rpc RecordEnergyUsage (RecordUsageRequest) returns (RecordUsageResponse);
+
+  // Unary RPC: get the most recent reading for a household
+  rpc GetLatestReading (LatestReadingRequest) returns (LatestReadingResponse);
+
+  // Server Streaming RPC: server pushes live readings continuously to the client
+  rpc StreamLiveReadings (StreamRequest) returns (stream EnergyReading);
+}
+
+// ──────────────────────────────────────────────
+//  RecordEnergyUsage messages
+// ──────────────────────────────────────────────
+
+// Request to record a new energy usage reading
+message RecordUsageRequest {
+  string household_id  = 1; // Unique identifier for the household
+  double energy_used   = 2; // Electricity consumed in kilowatt-hours (kWh)
+  string timestamp     = 3; // ISO 8601 datetime of the reading e.g. 2026-07-07T10:30:00Z
+}
+
+// Response confirming whether the reading was saved
+message RecordUsageResponse {
+  bool   success = 1; // true if the reading was successfully recorded
+  string message = 2; // Confirmation text or error description
+}
+
+// ──────────────────────────────────────────────
+//  GetLatestReading messages
+// ──────────────────────────────────────────────
+
+// Request to retrieve the most recent reading for a household
+message LatestReadingRequest {
+  string household_id = 1; // Unique identifier for the household to query
+}
+
+// Response containing the most recent energy reading
+message LatestReadingResponse {
+  double energy_used = 1; // Most recent electricity consumption in kWh
+  string timestamp   = 2; // ISO 8601 datetime of the last recorded reading
+}
+
+// ──────────────────────────────────────────────
+//  StreamLiveReadings messages
+// ──────────────────────────────────────────────
+
+// Request to begin streaming live readings for a household
+message StreamRequest {
+  string household_id      = 1; // Unique identifier for the household to stream
+  int32  interval_seconds  = 2; // How frequently the server sends a reading (in seconds)
+}
+
+// A single live energy reading streamed from the server
+message EnergyReading {
+  double energy_used = 1; // Current consumption value in kWh
+  string timestamp   = 2; // ISO 8601 datetime of this reading
+  string status      = 3; // Consumption level: NORMAL, HIGH, or CRITICAL
+}

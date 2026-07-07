@@ -1,0 +1,60 @@
+syntax = "proto3";
+
+option java_package = "com.smarthome.generated";
+option java_outer_classname = "SolarEnergyProto";
+option java_multiple_files = true;
+
+package solarenergy;
+
+// ──────────────────────────────────────────────
+//  Service Definition
+// ──────────────────────────────────────────────
+service SolarEnergyService {
+
+  // Client Streaming RPC: client streams multiple hourly readings,
+  // server returns a daily generation summary when the stream ends
+  rpc UploadSolarReadings (stream SolarReading) returns (SolarSummary);
+
+  // Unary RPC: retrieve the stored daily summary for a specific date
+  rpc GetDailySummary (DailySummaryRequest) returns (DailySummaryResponse);
+}
+
+// ──────────────────────────────────────────────
+//  UploadSolarReadings messages
+// ──────────────────────────────────────────────
+
+// A single hourly solar reading streamed from the client
+message SolarReading {
+  string panel_id        = 1; // Unique identifier of the solar panel
+  string timestamp       = 2; // ISO 8601 datetime the reading was taken
+  double generated_power = 3; // Solar energy produced at this time in kWh
+  double irradiance      = 4; // Sunlight intensity measured in W/m²
+}
+
+// Summary returned by the server after all client readings have been received
+message SolarSummary {
+  int32  total_readings        = 1; // Total number of readings received from the client
+  double total_generated_kwh   = 2; // Total energy produced across all readings in kWh
+  double peak_generation_kwh   = 3; // Highest single reading value in kWh
+  double average_irradiance    = 4; // Average sunlight intensity across all readings in W/m²
+  string message               = 5; // Status message e.g. "Daily upload complete"
+}
+
+// ──────────────────────────────────────────────
+//  GetDailySummary messages
+// ──────────────────────────────────────────────
+
+// Request to retrieve the stored summary for a specific panel and date
+message DailySummaryRequest {
+  string panel_id = 1; // Unique identifier of the solar panel to query
+  string date     = 2; // Date to retrieve summary for, in YYYY-MM-DD format
+}
+
+// Response containing the stored generation summary for the requested date
+message DailySummaryResponse {
+  double total_generated_kwh = 1; // Total energy generated on this date in kWh
+  double peak_generation_kwh = 2; // Peak output reading recorded on this date in kWh
+  string start_time          = 3; // ISO 8601 datetime of the first reading of the day
+  string end_time            = 4; // ISO 8601 datetime of the last reading of the day
+  string message             = 5; // Status message or error description
+}
