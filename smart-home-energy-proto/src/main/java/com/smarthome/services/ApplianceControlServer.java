@@ -33,7 +33,7 @@ public class ApplianceControlServer {
         // ?? 1. Start the gRPC server ??????????????????????????????
         grpcServer = ServerBuilder.forPort(PORT)
                 .addService(ServerInterceptors.intercept(
-                        new ApplianceControlServiceImpl(),
+                        new ApplianceControlServiceImpl().bindService(),
                         new AuthInterceptor()))
                 .build()
                 .start();
