@@ -34,7 +34,8 @@ public class SolarEnergyServer {
         grpcServer = ServerBuilder.forPort(PORT)
                 .addService(ServerInterceptors.intercept(
                         new SolarEnergyServiceImpl(),
-                        new AuthInterceptor()))
+                        new AuthInterceptor(),
+                        new DeadlineInterceptor()))
                 .build()
                 .start();
 

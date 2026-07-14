@@ -30,17 +30,18 @@ public class ApplianceControlServer {
 
     public void start() throws IOException, InterruptedException {
 
-        // ?? 1. Start the gRPC server ??????????????????????????????
+        // ?? 1. Start the gRPC server 
         grpcServer = ServerBuilder.forPort(PORT)
                 .addService(ServerInterceptors.intercept(
-                        new ApplianceControlServiceImpl().bindService(),
-                        new AuthInterceptor()))
+                        new ApplianceControlServiceImpl(),
+                        new AuthInterceptor(),
+                        new DeadlineInterceptor())
                 .build()
-                .start();
+                .start());
 
         logger.info("ApplianceControlServer started on port " + PORT);
 
-        // ?? 2. Register with jmDNS ???????????????????????????????
+        // ?? 2. Register with jmDNS 
         jmdns = JmDNS.create(InetAddress.getLocalHost());
 
         ServiceInfo serviceInfo = ServiceInfo.create(
@@ -53,7 +54,7 @@ public class ApplianceControlServer {
         jmdns.registerService(serviceInfo);
         logger.info("Service registered with jmDNS: " + SERVICE_NAME + " on port " + PORT);
 
-        // ?? 3. Shutdown hook ?????????????????????????????????????
+        // ?? 3. Shutdown hook 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             logger.info("Shutting down ApplianceControlServer...");
             stop();
