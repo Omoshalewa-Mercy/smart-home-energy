@@ -1,0 +1,22 @@
+{
+	"folders": [
+		{
+			"name": "smart-home-energy-proto",
+			"path": "."
+		},
+		{
+			"name": "ca1 resources",
+			"path": "../../OneDrive - National College of Ireland/Desktop/AAP/ca1 resources"
+		},
+		{
+			"name": "Vehicles-Data",
+			"path": "../../OneDrive - National College of Ireland/Desktop/AAP/ca1 resources/Vehicles-Data"
+		}
+	],
+	"settings": {
+		"java.compile.nullAnalysis.mode": "disabled",
+		"java.configuration.updateBuildConfiguration": "interactive",
+		"java.debug.settings.onBuildFailureProceed": true,
+		"java.project.sourcePaths": []
+	}
+}
